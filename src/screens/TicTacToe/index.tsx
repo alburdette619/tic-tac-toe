@@ -5,9 +5,11 @@ import Animated, { FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from "react-native-worklets";
 
+import { useHistoryStore } from "../../stores/gameHistoryStore";
 import { useTicTacToeStore } from "../../stores/ticTacToeStore";
 import { cardStyles } from "../../styles/cards";
 import { Colors } from "../../styles/colors";
+import { WinCondition } from "../../types/ticTacToeTypes";
 import { TicTacToeBoard } from "./components/TicTacToeBoard";
 
 export const TicTacToe = () => {
@@ -15,6 +17,7 @@ export const TicTacToe = () => {
 
   const { board, currentPlayer, gameFinished, isDraw, startGame, winner } =
     useTicTacToeStore();
+  const { addItem, history } = useHistoryStore();
   const isFirstMove = board.every((cell) => cell === null);
 
   // We need to access the store state in the `maybeAiFirstMove` worklet, but worklets capture,
@@ -50,12 +53,23 @@ export const TicTacToe = () => {
 
   useEffect(() => {
     if (isDraw || (winner && gameFinished)) {
+      let result: WinCondition = "Tie";
+
+      if (!isDraw) {
+        result = winner === "O" ? "Lose" : "Win";
+      }
+
+      console.log("Test", result);
+      addItem(result);
+
       // Give the user a moment to see the game finalized before navigating to the GameResult screen.
       setTimeout(() => {
         navigate("GameResult");
       }, 500);
     }
-  }, [gameFinished, isDraw, navigate, winner]);
+  }, [gameFinished, isDraw, navigate, winner, addItem]);
+
+  console.log(history);
 
   return (
     <SafeAreaView style={styles.container}>

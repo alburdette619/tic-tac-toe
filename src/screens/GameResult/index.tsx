@@ -9,7 +9,7 @@ import { cardStyles } from "../../styles/cards";
 import { Colors } from "../../styles/colors";
 
 export const GameResult = () => {
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const { isDraw, resetStore, winner } = useTicTacToeStore();
 
@@ -38,6 +38,10 @@ export const GameResult = () => {
     goBack();
   }, [resetStore, goBack]);
 
+  const handleShowGameHistory = useCallback(() => {
+    navigate("GameHistory");
+  }, [navigate]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.resultContainer}>
@@ -49,12 +53,20 @@ export const GameResult = () => {
         />
         <Text style={styles.resultText}>{resultText}</Text>
       </View>
-      <Pressable
-        onPress={handlePlayAgain}
-        style={[cardStyles.card, styles.playAgainButton]}
-      >
-        <Text style={styles.playAgainText}>Play Again!</Text>
-      </Pressable>
+      <View>
+        <Pressable
+          onPress={handleShowGameHistory}
+          style={[cardStyles.card, styles.playAgainButton]}
+        >
+          <Text style={styles.playAgainText}>History</Text>
+        </Pressable>
+        <Pressable
+          onPress={handlePlayAgain}
+          style={[cardStyles.card, styles.playAgainButton]}
+        >
+          <Text style={styles.playAgainText}>Play Again!</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 };

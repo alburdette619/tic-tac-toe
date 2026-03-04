@@ -1,4 +1,5 @@
 export type RootStackParamList = {
+  GameHistory: undefined;
   GameResult: undefined;
   TicTacToe: undefined;
 };
