@@ -59,7 +59,6 @@ export const TicTacToe = () => {
         result = winner === "O" ? "Lose" : "Win";
       }
 
-      console.log("Test", result);
       addItem(result);
 
       // Give the user a moment to see the game finalized before navigating to the GameResult screen.
@@ -68,8 +67,6 @@ export const TicTacToe = () => {
       }, 500);
     }
   }, [gameFinished, isDraw, navigate, winner, addItem]);
-
-  console.log(history);
 
   return (
     <SafeAreaView style={styles.container}>
