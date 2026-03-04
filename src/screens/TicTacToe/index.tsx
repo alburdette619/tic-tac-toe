@@ -17,7 +17,7 @@ export const TicTacToe = () => {
 
   const { board, currentPlayer, gameFinished, isDraw, startGame, winner } =
     useTicTacToeStore();
-  const { addItem, history } = useHistoryStore();
+  const { addItem } = useHistoryStore();
   const isFirstMove = board.every((cell) => cell === null);
 
   // We need to access the store state in the `maybeAiFirstMove` worklet, but worklets capture,
