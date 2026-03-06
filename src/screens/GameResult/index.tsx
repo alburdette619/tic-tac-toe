@@ -11,7 +11,7 @@ import { Colors } from "../../styles/colors";
 export const GameResult = () => {
   const { goBack, navigate } = useNavigation();
 
-  const { isDraw, resetStore, winner } = useTicTacToeStore();
+  const { gameMode, isDraw, resetStore, winner } = useTicTacToeStore();
 
   const { animation, resultText } = useMemo(() => {
     if (isDraw) {
@@ -24,14 +24,16 @@ export const GameResult = () => {
         ? {
             animation: require("../../../assets/lottie/you-win.json"),
             resultText:
-              "You Win! (this should have been impossible... congrats I guess?)",
+              gameMode === "Hard"
+                ? " (this should have been impossible... congrats I guess?)"
+                : "",
           }
         : {
             animation: require("../../../assets/lottie/game-over.json"),
-            resultText: "You Lose!",
+            resultText: "",
           };
     }
-  }, [isDraw, winner]);
+  }, [isDraw, winner, gameMode]);
 
   const handlePlayAgain = useCallback(() => {
     resetStore();

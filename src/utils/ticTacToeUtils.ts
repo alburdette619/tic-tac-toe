@@ -1,4 +1,5 @@
 import {
+  GameMode,
   TicTacToeBoardType,
   TicTacToeCellType,
   TicTacToePlayerSymbol,
@@ -17,6 +18,19 @@ const WIN_LINES: WinningLine[] = [
 ];
 
 const OPTIMAL_FIRST_MOVES = [0, 2, 4, 6, 8];
+
+interface GetBestMoveParams {
+  aiSymbol?: TicTacToePlayerSymbol;
+  board: TicTacToeBoardType;
+  difficulty: GameMode;
+  humanSymbol?: TicTacToePlayerSymbol;
+}
+
+interface MinimaxParams extends Omit<GetBestMoveParams, "difficulty"> {
+  maxMovesAhead?: number;
+  movesAhead: number;
+  turn: TicTacToePlayerSymbol;
+}
 
 export const getWinner = (
   board: TicTacToeBoardType,
@@ -46,16 +60,20 @@ const availableMoves = (board: TicTacToeBoardType): number[] => {
   return moves;
 };
 
-const miniMax = (
-  board: TicTacToeBoardType,
-  turn: TicTacToePlayerSymbol,
-  movesAhead: number,
-  aiSymbol: TicTacToePlayerSymbol = "O",
-  humanSymbol: TicTacToePlayerSymbol = "X",
-): { move: null | number; score: number } => {
+const miniMax = ({
+  aiSymbol = "O",
+  board,
+  humanSymbol = "X",
+  maxMovesAhead = Infinity,
+  movesAhead,
+  turn,
+}: MinimaxParams): { move: null | number; score: number } => {
   const boardCopy = [...board];
 
   const { winner } = getWinner(boardCopy);
+  if (movesAhead >= maxMovesAhead) {
+    return { move: null, score: 0 };
+  }
   if (winner === aiSymbol) return { move: null, score: 10 - movesAhead };
   if (winner === humanSymbol) return { move: null, score: movesAhead - 10 };
   if (boardCopy.every((c) => c !== null)) return { move: null, score: 0 };
@@ -70,13 +88,14 @@ const miniMax = (
 
   moves.forEach((m) => {
     boardCopy[m] = turn;
-    const next = miniMax(
-      boardCopy,
-      turn === "X" ? "O" : "X", // next player's turn
-      movesAhead + 1,
+    const next = miniMax({
       aiSymbol,
+      board: boardCopy,
       humanSymbol,
-    );
+      maxMovesAhead,
+      movesAhead: movesAhead + 1,
+      turn: turn === "X" ? "O" : "X", // next player's turn
+    });
     boardCopy[m] = null;
 
     if (turn === aiSymbol) {
@@ -89,22 +108,34 @@ const miniMax = (
   return best;
 };
 
-export const getBestMove = (
-  board: TicTacToeBoardType,
-  ai: TicTacToePlayerSymbol = "O",
-  human: TicTacToePlayerSymbol = "X",
-): null | number => {
+export const getBestMove = ({
+  aiSymbol = "O",
+  board,
+  difficulty,
+  humanSymbol = "X",
+}: GetBestMoveParams): null | number => {
   // If the board is empty, just take the middle. No need to run the minimax algorithm.
   if (board.every((c) => c === null))
-    return OPTIMAL_FIRST_MOVES[
-      Math.floor(Math.random() * OPTIMAL_FIRST_MOVES.length)
-    ];
+    if (difficulty === "Hard") {
+      return OPTIMAL_FIRST_MOVES[
+        Math.floor(Math.random() * OPTIMAL_FIRST_MOVES.length)
+      ];
+    } else {
+      return Math.floor(Math.random() * 9);
+    }
 
   if (getWinner(board).winner || board.every((c) => c !== null)) {
     return null;
   }
 
-  return miniMax(board, ai, 0, ai, human).move;
+  return miniMax({
+    aiSymbol,
+    board,
+    humanSymbol,
+    maxMovesAhead: difficulty === "Hard" ? Infinity : 2,
+    movesAhead: 0,
+    turn: aiSymbol,
+  }).move;
 };
 
 export const getStrike = (boardSquareDimension: number, line: WinningLine) => {

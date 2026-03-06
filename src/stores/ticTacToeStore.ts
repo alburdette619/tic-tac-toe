@@ -44,8 +44,8 @@ export const useTicTacToeStore = create<TicTacToeStore>((set, get) => {
   return {
     ...defaultState,
     makeAiMove: () => {
-      const { board } = get();
-      const aiMove = getBestMove(board);
+      const { board, gameMode } = get();
+      const aiMove = getBestMove({ board, difficulty: gameMode });
 
       if (aiMove !== null) {
         set((state) => {
