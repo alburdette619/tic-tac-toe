@@ -17,8 +17,8 @@ export const useHistoryStore = create<HistoryStoreState>()(
         const { history: currentHistory } = get();
         return set(() => ({
           history: [
-            ...currentHistory,
             { result, timestamp: new Date().getTime() },
+            ...currentHistory,
           ],
         }));
       },
