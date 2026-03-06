@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import { format } from "date-fns";
+import { formatDistance } from "date-fns";
 import { useCallback } from "react";
 import {
   FlatList,
@@ -23,9 +23,12 @@ export const GameHistory = () => {
 
   const renderHistoryItem = useCallback(
     ({ item }: ListRenderItemInfo<HistoryType>) => {
-      const formattedTimestamp = format(
+      const formattedTimestamp = formatDistance(
         new Date(item.timestamp),
-        "MMM do, yyyy h:mm aa",
+        new Date(),
+        {
+          addSuffix: true,
+        },
       );
 
       return (
