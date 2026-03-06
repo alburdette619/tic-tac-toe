@@ -68,6 +68,10 @@ export const TicTacToe = () => {
     }
   }, [gameFinished, isDraw, navigate, winner, addItem]);
 
+  const handleShowGameHistory = useCallback(() => {
+    navigate("GameHistory");
+  }, [navigate]);
+
   return (
     <SafeAreaView style={styles.container}>
       {currentPlayer === null ? (
@@ -75,6 +79,7 @@ export const TicTacToe = () => {
         // the first 'O' move appearing before the player choice fades out.
         <Animated.View
           exiting={FadeOut.withCallback(handlePlayerChoiceFadeOut)}
+          style={styles.pregameContainer}
         >
           <Text style={styles.playerChoiceText}>Who Goes First?</Text>
           <View style={styles.playerChoiceContainer}>
@@ -93,6 +98,9 @@ export const TicTacToe = () => {
               <Text style={styles.playerIdentityText}>(CPU)</Text>
             </Pressable>
           </View>
+          <Pressable onPress={handleShowGameHistory} style={[cardStyles.card]}>
+            <Text>History</Text>
+          </Pressable>
         </Animated.View>
       ) : (
         <TicTacToeBoard />
@@ -123,5 +131,9 @@ const styles = StyleSheet.create({
   playerIdentityText: {
     fontSize: 24,
     marginTop: 8,
+  },
+  pregameContainer: {
+    flex: 1,
+    justifyContent: "space-between",
   },
 });
